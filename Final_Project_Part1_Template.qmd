@@ -9,9 +9,9 @@ editor_options:
 ## Student Info
 
 ```         
-Name: 
-Term: 
-Date:
+Name: Bryan Keating
+Term: Fall 1
+Date: 10/09/2026
 ```
 
 ------------------------------------------------------------------------
