@@ -40,7 +40,7 @@ Name your assignment file **`Final_Project_Part1.qmd`**. This is a Quarto "markd
 
 On this part of the project, the only allowable packages are `tidyverse`, `psych` and `lm.beta`. You should not use any other packages on this part because CodeGrade is not set up to accept them.
 
--   If the allowable packages are not installed on your local computer, you'll need to do a one-time installation *from the Console Window in RStudio* for each package like this:
+- If the allowable packages are not installed on your local computer, you'll need to do a one-time installation *from the Console Window in RStudio* for each package like this:
 
 **`install.packages('<package name>')`**
 
@@ -50,31 +50,31 @@ On this part of the project, the only allowable packages are `tidyverse`, `psych
 
 ### Do / Do not
 
--   Do use tidyverse functions for all of the questions where possible.
+- Do use tidyverse functions for all of the questions where possible.
 
--   Do use comments in your code and written descriptions outside the code chunks to remind yourself of what you've tried or ideas you have.
+- Do use comments in your code and written descriptions outside the code chunks to remind yourself of what you've tried or ideas you have.
 
--   Do not use the `print()` function anywhere in the notebook. If you do this while working on the project, please be sure to comment those lines out before submitting.
+- Do not use the `print()` function anywhere in the notebook. If you do this while working on the project, please be sure to comment those lines out before submitting.
 
--   Do not rearrange dataframe outputs unless specified by the question instructions.
+- Do not rearrange dataframe outputs unless specified by the question instructions.
 
--   Do not create multiple copies of the BRFSS dataset in your notebook. Creating too many copies of the dataset can cause CodeGrade to crash.
+- Do not create multiple copies of the BRFSS dataset in your notebook. Creating too many copies of the dataset can cause CodeGrade to crash.
 
 ------------------------------------------------------------------------
 
 ### Data Set
 
--   These data come from the [Centers for Disease Control and Prevention](www.cdc.gov)
+- These data come from the [Centers for Disease Control and Prevention](www.cdc.gov)
 
--   To answer these questions you will need to use the codebook on Brightspace, called `BRFSS_2021 Codebook`. For part 2 of the project, please note that not all of the variables listed in the codebook are included in the .csv file to be downloaded from Brightspace.
+- To answer these questions you will need to use the codebook on Brightspace, called `BRFSS_2021 Codebook`. For part 2 of the project, please note that not all of the variables listed in the codebook are included in the .csv file to be downloaded from Brightspace.
 
--   Download the `brfss2021.csv` file from Brightspace and place it in the same folder/directory as your script file. Then in RStudio, set your Working Directory to your Source File location: in the menus choose Session \| Set Working Directory \| To Source File Location. You most likely will see some warnings after it loads due to the fact that `read_csv()` will try to guess the column type but because there are so many rows it won't read enough of them to accurately make a guess.
+- Download the `brfss2021.csv` file from Brightspace and place it in the same folder/directory as your script file. Then in RStudio, set your Working Directory to your Source File location: in the menus choose Session \| Set Working Directory \| To Source File Location. You most likely will see some warnings after it loads due to the fact that `read_csv()` will try to guess the column type but because there are so many rows it won't read enough of them to accurately make a guess.
 
--   You must use the `read_csv()` function when loading the .csv file. Do not use read.csv().
+- You must use the `read_csv()` function when loading the .csv file. Do not use read.csv().
 
--   Do not rename the .csv file that you download from Brightspace.
+- Do not rename the .csv file that you download from Brightspace.
 
--   Do not edit the .csv file.
+- Do not edit the .csv file.
 
 ------------------------------------------------------------------------
 
@@ -122,11 +122,11 @@ brf <- read_csv("brfss2021.csv", show_col_types = FALSE)
 
 ### Q1: We will be analyzing three variables (described below) in part 1 of this project. Identify the names of the variables indicated below using the CodeBook provided on Brightspace. Using the brfss2021.csv data provided on Brightspace, create a dataframe named `brf_Q1` with only three columns (in the order listed below). Do not rename the variables. Store the first 10 rows in `Q1`.
 
--   a variable that measures how often the respondent eats fruit (not including juices).
+- a variable that measures how often the respondent eats fruit (not including juices).
 
--   a variable that records the length of time since last routine medical checkup
+- a variable that records the length of time since last routine medical checkup
 
--   a variable that records the general health of the respondent.
+- a variable that records the general health of the respondent.
 
 We encourage you to explore both the Codebook and the Questionnaire on Brightspace and take note of the values of each of these three variables and familiarize yourself with them before continuing.
 
@@ -144,7 +144,7 @@ brf_Q1 <- brf |>
   as.data.frame()
 
 Q1 <- brf_Q1 |> 
-  slice(1:10) |> 
+  head(10) |> 
   as.data.frame()
 
 ### VIEW OUTPUT ###
@@ -160,13 +160,19 @@ Hint: The resulting `brf_Q2` dataframe is 431,750 x 3.
 # CG Q2 # 
 
 ### TYPE YOUR CODE BELOW ###
+brf_Q2 <- brf_Q1 |>
+  filter(!GENHLTH %in% c(NA, 7, 9)) |> 
+  filter(!CHECKUP1 %in% c(NA, 7, 9)) |> 
+  arrange(GENHLTH) |> 
+  as.data.frame()
 
-
-
-
+Q2 <- brf_Q2 |> 
+  head(10) |> 
+  as.data.frame()
 
 ### VIEW OUTPUT ###
 Q2
+
 ```
 
 ### Q3: How many people (and what percentage) reported that, in general, their health is either good or very good? Your answer should be a dataframe with two values: the number and the percentage. Round the percentage to the nearest tenth. Store it as `Q3`.
@@ -185,10 +191,11 @@ Count       Percent
 # CG Q3 # 
 
 ### TYPE YOUR CODE BELOW ###
-
-
-
-
+Q3 <- brf_Q2 |> 
+  summarise(
+    Count = sum(GENHLTH %in% c(2,3)),
+    Percent = round(100*Count / n(), 1)) |> 
+  as.data.frame()
 
 ### VIEW OUTPUT ###
 Q3
@@ -227,21 +234,19 @@ Q4
 
 ### Q5: Now we will clean the variable that measures how often the respondent ate fruit per day or per week or per month. Create a new dataframe named `brf_Q5` based on `brf_Q2` with a new column named `FRTDAY` that converts all of the responses into fruits eaten *per day*. Place the new column as the first column in the dataframe. Be sure to account for 0 days. Use 30 days per month and 7 days per week in your conversion calculations and use 0.02 for the value that represents "less than once a month".
 
--   Remove the respondents who said "don't know/not sure" or refused to respond.
+- Remove the respondents who said "don't know/not sure" or refused to respond.
 
--   Be sure to round any conversion calculations to two decimal places.
+- Be sure to round any conversion calculations to two decimal places.
 
--   FRTDAY should still contain "Not asked or Missing" values. We will handle those responses later.
+- FRTDAY should still contain "Not asked or Missing" values. We will handle those responses later.
 
--   Drop the original fruit variable from the `brf_Q5` dataframe (but keep FRTDAY).
+- Drop the original fruit variable from the `brf_Q5` dataframe (but keep FRTDAY).
 
--   The resulting `brf_Q5` dataframe should have 422,747 rows.
+- The resulting `brf_Q5` dataframe should have 422,747 rows.
 
--   Sort `brf_Q5` by the general health variable (from excellent health to poor health) and assign the first 10 rows to `Q5`.
+- Sort `brf_Q5` by the general health variable (from excellent health to poor health) and assign the first 10 rows to `Q5`.
 
--   Some values for rows 3, 6, 36, 65, 114, 120, 365 are shown below to make sure you're on the right track. 
-    You can use the following code to look at those rows: 
-    brf_Q5[c(3, 6, 36, 65, 114, 120, 365),]
+- Some values for rows 3, 6, 36, 65, 114, 120, 365 are shown below to make sure you're on the right track. You can use the following code to look at those rows: brf_Q5\[c(3, 6, 36, 65, 114, 120, 365),\]
 
 ```         
     FRTDAY CHECKUP1 GENHLTH
@@ -324,7 +329,7 @@ Hint 2: Check that NAs still exist in the FRTDAY variable.
 
 #### d) Finally, create a new dataframe named `brf_Q7` from `brf_Q7c` that imputes the median number of fruits per day to the "not asked or missing" values. With the new `brf_Q7` dataframe, use `describe` from the `Psych` package to output statistics from each variable. Store this output as `Q7.`
 
--   The first few columns of the output should look something like this:
+- The first few columns of the output should look something like this:
 
 ```         
           vars    n         mean    sd            ...   ...
@@ -333,8 +338,8 @@ FRTDAY    1       420720    1.04    <value>       ...   ...
 <name>    3       420720    <value> <value>       ...   ...
 ```
 
--   Note 1: do not convert the output of the describe() function to a dataframe.
--   Note 2: The interpretation of this output should take the data types and values into consideration.
+- Note 1: do not convert the output of the describe() function to a dataframe.
+- Note 2: The interpretation of this output should take the data types and values into consideration.
 
 ```{r}
 ### Do not edit the following line. It is used by CodeGrade.
@@ -396,7 +401,7 @@ F-statistic:  <value> on <value> and <value> DF,  p-value: < <value>
 Q8
 ```
 
-### Q9: Create a new dataframe named `brf_Q9` based on `brf_Q7` with two new columns with binary data. For any health level of very good or excellent, set the value to 1; otherwise, a 0. Call this `binHealth`. For any person attending a checkup within the past year, set to a value of 1; otherwise, 0. Call this `binCheckup`. With the updated dataframe, perform a logistic regression to predict an individual's general health being very good or excellent based on `FRTDAY` and `binCheckup`. Store the summary of the regression  in `Q9.`
+### Q9: Create a new dataframe named `brf_Q9` based on `brf_Q7` with two new columns with binary data. For any health level of very good or excellent, set the value to 1; otherwise, a 0. Call this `binHealth`. For any person attending a checkup within the past year, set to a value of 1; otherwise, 0. Call this `binCheckup`. With the updated dataframe, perform a logistic regression to predict an individual's general health being very good or excellent based on `FRTDAY` and `binCheckup`. Store the summary of the regression in `Q9.`
 
 Hint: Keep in mind what type of data each variable is and how we do regression with that type of data.
 
