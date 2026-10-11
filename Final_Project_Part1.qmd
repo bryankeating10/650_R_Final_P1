@@ -139,10 +139,13 @@ Note 2: For this part of the project, you should not convert any data types unti
 # CG Q1 # 
 
 ### TYPE YOUR CODE BELOW ###
+brf_Q1 <- brf |> 
+  select(FRUIT2, CHECKUP1, GENHLTH) |> 
+  as.data.frame()
 
-
-
-
+Q1 <- brf_Q1 |> 
+  slice(1:10) |> 
+  as.data.frame()
 
 ### VIEW OUTPUT ###
 Q1
